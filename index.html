@@ -129,9 +129,8 @@
 
 <script>
 /* ================= 默认数据（可在管理模式下修改） ================= */
-const DEFAULT_DATA = {
- {
-  "title": "企业融资难融资贵直通车明白纸",
+const DEFAULT_DATA ={
+  "title": "贷款直通车明白纸",
   "banks": [
     {
       "id": "b1789261054594",
@@ -534,7 +533,7 @@ const DEFAULT_DATA = {
       ]
     }
   ]
-}；
+};
 
 /* ================= 数据存取 ================= */
 const KEY = "zhitongche_data_v1";
@@ -761,32 +760,6 @@ function resetData() {
   DATA = loadData(); render();
 }
 
-/* ================= 生成发布版 =================
-   把当前数据写入 index.html，下载后上传到服务器覆盖原文件，
-   所有扫码的客户即可看到最新内容（不再依赖某一台浏览器的本地缓存） */
-async function publishHtml() {
-  let src;
-  try {
-    src = await (await fetch(location.href.split("?")[0])).text();
-  } catch (e) {
-    alert("生成发布版需要先通过 http(s) 网址访问页面（部署后的网址），本地双击文件无法生成。");
-    return;
-  }
-  const marker = "const DEFAULT_DATA = ";
-  const endMarker = "/* ================= 数据存取";
-  const start = src.indexOf(marker);
-  const end = src.indexOf(endMarker);
-  if (start < 0 || end < 0 || end < start) { alert("生成失败：网页文件结构不符合预期"); return; }
-  // 用当前数据替换默认数据（JSON 格式同时是合法 JS 对象字面量）
-  const newHtml = src.slice(0, start) + marker + JSON.stringify(DATA, null, 2) + ";\n\n" + src.slice(end);
-  const blob = new Blob([newHtml], { type: "text/html;charset=utf-8" });
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = "index.html";
-  a.click();
-  alert("已下载 index.html（内嵌最新数据）。\n请上传到服务器覆盖旧文件，客户即可看到修改后的内容。");
-}
-
 function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 }
@@ -796,7 +769,6 @@ if (adminMode) {
   const bar = document.createElement("div");
   bar.className = "admin-bar";
   bar.innerHTML = `
-    <button class="primary" onclick="publishHtml()">① 生成发布版</button>
     <button onclick="editTitle()">改标题</button>
     <button onclick="exportData()">导出配置</button>
     <button onclick="importData()">导入配置</button>
